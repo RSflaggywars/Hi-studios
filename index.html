@@ -3,131 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P2P Direct Connect</title>
-    <!-- We import PeerJS to handle the complex WebRTC connection -->
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <title>AI Provider API Key Generator</title>
     <style>
-        body { font-family: sans-serif; background: #eef2f3; display: flex; justify-content: center; padding:
-20px; }
-        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-width: 100%; max-width: 500px; }
-        .status { padding: 10px; border-radius: 5px; margin-bottom: 20px; font-size: 0.9rem; font-weight: bold;
-text-align: center; }
-        .online { background: #d4edda; color: #155724; }
-        .offline { background: #f8d7da; color: #721c24; }
+        :root {
+            --primary: #6366f1;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --accent: #22c55e;
+        }
 
-        .section { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ccc;
-border-radius: 5px; }
-        button { width: 100%; padding: 10px; cursor: pointer; border: none; border-radius: 5px; background:
-#007bff; color: white; font-weight: bold; }
-        button:hover { background: #0056b3; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-        #chat-box { height: 200px; border: 1px solid #ddd; overflow-y: scroll; padding: 10px; margin-bottom: 10px;
-background: #fafafa; display: flex; flex-direction: column; }
-        .msg { margin-bottom: 8px; padding: 5px 10px; border-radius: 5px; max-width: 80%; }
-        .msg.me { background: #007bff; color: white; align-self: flex-end; }
-        .msg.them { background: #e2e2e2; color: black; align-self: flex-start; }
+        .container {
+            background-color: var(--card);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #4f46e5;
+        }
+
+        .result-area {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #0f172a;
+            border-radius: 0.5rem;
+            border: 1px dashed var(--primary);
+            display: none;
+            position: relative;
+        }
+
+        .key-display {
+            font-family: 'Courier New', Courier, monospace;
+            word-break: break-all;
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            background: #334155;
+            font-size: 0.8rem;
+            width: auto;
+            padding: 5px 15px;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>P2P Direct Connect</h2>
+    <div class="container">
+        <h1>🔑 AI Key Mixer</h1>
 
-    <div id="status" class="status offline">Initializing...</div>
+        <div class="form-group">
+            <label for="provider">Select AI Provider</label>
+            <select id="provider">
+                <option value="openai">OpenAI (sk-...)</option>
+                <option value="anthropic">Anthropic (ak-...)</option>
+                <option value="google">Google Gemini (AIza...)</option>
+                <option value="mistral">Mistral (mi-...)</option>
+                <option value="custom">Custom Mixed Format</option>
+            </select>
+        </div>
 
-    <!-- Section 1: Your ID -->
-    <div class="section">
-        <p><strong>Your Peer ID:</strong> <span id="my-id" style="color: #007bff;">...</span></p>
-        <small>Share this ID with your friend so they can connect to you.</small>
+        <button onclick="generateKey()">Generate API Key</button>
+
+        <div id="resultArea" class="result-area">
+            <div id="keyDisplay" class="key-display"></div>
+            <button class="copy-btn" onclick="copyKey()">Copy to Clipboard</button>
+        </div>
     </div>
 
-    <!-- Section 2: Connect to Peer -->
-    <div class="section">
-        <input type="text" id="peer-id-input" placeholder="Enter Friend's Peer ID">
-        <button onclick="connectToPeer()">Connect to Peer</button>
-    </div>
-
-    <!-- Section 3: Messaging -->
-    <div class="section">
-        <div id="chat-box"></div>
-        <input type="text" id="message-input" placeholder="Type a message...">
-        <button onclick="sendMessage()" style="background: #28a745;">Send Message</button>
-    </div>
-</div>
-
-<script>
-    let peer;
-    let conn;
-
-    // 1. Create a Peer object. This generates a random ID for you.
-    peer = new Peer();
-
-    // When the Peer ID is generated and ready
-    peer.on('open', (id) => {
-        document.getElementById('my-id').innerText = id;
-        document.getElementById('status').innerText = "Ready for Connection";
-        document.getElementById('status').className = "status online";
-    });
-
-    // 2. Listen for incoming connections from other peers
-    peer.on('connection', (connection) => {
-        conn = connection;
-        setupChat();
-        appendMessage("System", "Friend connected to you!", "them");
-    });
-
-    // 3. Function to connect to someone else
-    function connectToPeer() {
-        const peerId = document.getElementById('peer-id-input').value;
-        if (!peerId) return alert("Please enter an ID");
-
-        conn = peer.connect(peerId);
-        setupChat();
-        appendMessage("System", "Connecting to peer...", "them");
-    }
-
-    // 4. Handle data transmission
-    function setupChat() {
-        conn.on('open', () => {
-            document.getElementById('status').innerText = "Connected P2P!";
-            document.getElementById('status').className = "status online";
-
-            conn.on('data', (data) => {
-                appendMessage("Friend", data, "them");
-            });
-        });
-
-        conn.on('close', () => {
-            document.getElementById('status').innerText = "Connection Closed";
-            document.getElementById('status').className = "status offline";
-        });
-    }
-
-    function sendMessage() {
-        const msgInput = document.getElementById('message-input');
-        const msg = msgInput.value;
-
-        if (conn && conn.open) {
-            conn.send(msg); // Sends data directly to the other browser
-            appendMessage("Me", msg, "me");
-            msgInput.value = "";
-        } else {
-            alert("Not connected to anyone!");
+    <script>
+        function generateRandomString(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
         }
-    }
 
-    function appendMessage(sender, text, type) {
-        const chatBox = document.getElementById('chat-box');
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `msg ${type}`;
-        msgDiv.innerText = `${sender}: ${text}`;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
-</script>
+        function generateKey() {
+            const provider = document.getElementById('provider').value;
+            const display = document.getElementById('keyDisplay');
+            const area = document.getElementById('resultArea');
+            let finalKey = "";
 
+            switch(provider) {
+                case 'openai':
+                    finalKey = "sk-" + generateRandomString(48);
+                    break;
+                case 'anthropic':
+                    finalKey = "ak-ant-" + generateRandomString(32);
+                    break;
+                case 'google':
+                    finalKey = "AIza" + generateRandomString(36);
+                    break;
+                case 'mistral':
+                    finalKey = "mi-" + generateRandomString(40);
+                    break;
+                case 'custom':
+                    finalKey = "MIX-" + generateRandomString(10) + "-" + generateRandomString(10) + "-" +
+generateRandomString(10);
+                    break;
+            }
+
+            display.innerText = finalKey;
+            area.style.display = 'block';
+        }
+
+        function copyKey() {
+            const key = document.getElementById('keyDisplay').innerText;
+            navigator.clipboard.writeText(key);
+            alert("Key copied to clipboard!");
+        }
+    </script>
 </body>
 </html>
-```
