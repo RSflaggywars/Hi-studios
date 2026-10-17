@@ -13,52 +13,54 @@
 
 body {
     margin: 0;
-    font-family: Inter, Arial, sans-serif;
-    background: #0c0d10;
-    color: #f5f5f7;
     height: 100vh;
     display: flex;
+    font-family: Arial, sans-serif;
+    background: #0c0d10;
+    color: #f5f5f7;
 }
 
 .sidebar {
     width: 250px;
+    flex-shrink: 0;
     background: #101115;
-    border-right: 1px solid #26272e;
+    border-right: 1px solid #292a32;
     padding: 22px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 22px;
 }
 
 .logo {
-    font-size: 23px;
-    font-weight: 800;
+    font-size: 25px;
+    font-weight: bold;
     letter-spacing: -1px;
 }
 
 .logo span {
-    color: #9b8cff;
+    color: #a99aff;
 }
 
 .new-chat {
     background: #24242e;
-    border: 1px solid #393946;
     color: white;
-    padding: 12px;
+    border: 1px solid #393946;
+    padding: 13px;
     border-radius: 10px;
     cursor: pointer;
     text-align: left;
 }
 
 .new-chat:hover {
-    background: #32313f;
+    background: #333340;
 }
 
 .model {
     margin-top: auto;
-    color: #a6a6b5;
+    color: #a5a5b5;
     font-size: 12px;
-    line-height: 1.8;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
 }
 
 .main {
@@ -70,30 +72,17 @@ body {
 
 header {
     height: 66px;
+    flex-shrink: 0;
     padding: 0 25px;
-    border-bottom: 1px solid #26272e;
+    border-bottom: 1px solid #292a32;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-header strong {
-    font-size: 15px;
-}
-
 .status {
     font-size: 12px;
-    color: #a4a4b5;
-}
-
-.status::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    background: #63d6a1;
-    border-radius: 50%;
-    margin-right: 7px;
+    color: #a5a5b5;
 }
 
 #chat {
@@ -108,15 +97,16 @@ header strong {
     max-width: 500px;
 }
 
-.welcome .symbol {
-    font-size: 38px;
+.symbol {
+    color: #b3a6ff;
+    font-size: 40px;
     margin-bottom: 15px;
 }
 
 .welcome h1 {
     font-size: clamp(27px, 4vw, 38px);
-    margin: 0 0 12px;
     letter-spacing: -1.5px;
+    margin-bottom: 12px;
 }
 
 .welcome p {
@@ -133,30 +123,30 @@ header strong {
 }
 
 .avatar {
-    width: 33px;
-    height: 33px;
+    width: 34px;
+    height: 34px;
     flex-shrink: 0;
     border-radius: 10px;
     display: grid;
     place-items: center;
-    background: #252432;
-    font-size: 14px;
+    background: #282638;
+    font-size: 12px;
 }
 
 .message.user .avatar {
-    background: #373047;
+    background: #393047;
 }
 
 .content {
     min-width: 0;
-    padding-top: 6px;
+    padding-top: 5px;
     line-height: 1.7;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
 }
 
 .content.error {
-    color: #ff9b9b;
+    color: #ff9c9c;
 }
 
 .composer-area {
@@ -182,7 +172,7 @@ textarea {
     outline: none;
     background: transparent;
     color: white;
-    font: inherit;
+    font-family: inherit;
     font-size: 14px;
     line-height: 1.6;
     padding: 7px;
@@ -194,19 +184,19 @@ textarea::placeholder {
 }
 
 #send {
-    background: #a89aff;
-    color: #14111f;
+    background: #a99aff;
+    color: #171321;
     border: none;
     border-radius: 10px;
     width: 40px;
     height: 40px;
-    font-size: 20px;
+    font-size: 22px;
     cursor: pointer;
     flex-shrink: 0;
 }
 
 #send:disabled {
-    opacity: .45;
+    opacity: 0.45;
     cursor: not-allowed;
 }
 
@@ -241,16 +231,22 @@ textarea::placeholder {
 
 <aside class="sidebar">
     <div class="logo">astra<span>.</span></div>
-    <button class="new-chat" id="newChat">＋ New chat</button>
+
+    <button class="new-chat" id="newChat">
+        ＋ New chat
+    </button>
 
     <div class="model">
         <strong>MODEL</strong><br>
         ollama/gpt-6-astra<br>
-        <span>Connected through LiteLLM</span>
+        <span>LiteLLM connection</span><br><br>
+        <strong>SERVER</strong><br>
+        0.0.0.0:4000/v1/chat
     </div>
 </aside>
 
 <main class="main">
+
     <header>
         <strong>Astra AI</strong>
         <span class="status" id="status">Ready</span>
@@ -260,27 +256,36 @@ textarea::placeholder {
         <div class="welcome" id="welcome">
             <div class="symbol">✳</div>
             <h1>What are we building?</h1>
-            <p>Your AI coding assistant, powered by your own LiteLLM server.</p>
+            <p>Your AI coding assistant, connected to your LiteLLM server.</p>
         </div>
     </section>
 
     <div class="composer-area">
         <form class="composer" id="form">
-            <textarea id="input" rows="1"
+            <textarea
+                id="input"
+                rows="1"
                 placeholder="Message Astra..."
-                aria-label="Message Astra"></textarea>
-            <button id="send" type="submit" aria-label="Send">↑</button>
+                aria-label="Message Astra"
+            ></textarea>
+
+            <button id="send" type="submit" aria-label="Send">
+                ↑
+            </button>
         </form>
-        <div class="hint">Enter to send · Shift + Enter for a new line</div>
+
+        <div class="hint">
+            Enter to send · Shift + Enter for a new line
+        </div>
     </div>
+
 </main>
 
 <script>
-const API_URL = "http://localhost:4000/v1/chat/completions";
+const API_URL = "http://0.0.0.0:4000/v1/chat";
 const MODEL = "ollama/gpt-6-astra";
 
-// If your LiteLLM server requires a virtual key,
-// put it here. Otherwise, leave it empty.
+// Add your LiteLLM API key if required.
 const API_KEY = "";
 
 const chat = document.getElementById("chat");
@@ -292,7 +297,7 @@ const statusText = document.getElementById("status");
 let messages = [];
 let busy = false;
 
-function addMessage(role, text, error = false) {
+function addMessage(role, text, isError = false) {
     const row = document.createElement("div");
     row.className = "message " + role;
 
@@ -301,11 +306,19 @@ function addMessage(role, text, error = false) {
     avatar.textContent = role === "user" ? "You" : "✳";
 
     const content = document.createElement("div");
-    content.className = "content" + (error ? " error" : "");
+    content.className = "content";
+
+    if (isError) {
+        content.classList.add("error");
+    }
+
+    // textContent prevents AI responses from injecting HTML.
     content.textContent = text;
 
-    row.append(avatar, content);
+    row.appendChild(avatar);
+    row.appendChild(content);
     chat.appendChild(row);
+
     chat.scrollTop = chat.scrollHeight;
 
     return content;
@@ -329,7 +342,7 @@ function resetChat() {
 
     const description = document.createElement("p");
     description.textContent =
-        "Your AI coding assistant, powered by your own LiteLLM server.";
+        "Your AI coding assistant, connected to your LiteLLM server.";
 
     welcome.append(symbol, title, description);
     chat.appendChild(welcome);
@@ -345,10 +358,13 @@ async function sendMessage(text) {
     input.disabled = true;
     statusText.textContent = "Thinking...";
 
-    const userMessage = { role: "user", content: text.trim() };
+    const userMessage = {
+        role: "user",
+        content: text.trim()
+    };
 
-    addMessage("user", userMessage.content);
     messages.push(userMessage);
+    addMessage("user", userMessage.content);
 
     const thinking = addMessage("assistant", "Thinking...");
 
@@ -363,7 +379,7 @@ async function sendMessage(text) {
 
         const response = await fetch(API_URL, {
             method: "POST",
-            headers,
+            headers: headers,
             body: JSON.stringify({
                 model: MODEL,
                 messages: messages,
@@ -373,6 +389,7 @@ async function sendMessage(text) {
 
         if (!response.ok) {
             const detail = await response.text();
+
             throw new Error(
                 "HTTP " + response.status + ": " + detail
             );
@@ -382,10 +399,13 @@ async function sendMessage(text) {
         const answer = data.choices?.[0]?.message?.content;
 
         if (typeof answer !== "string") {
-            throw new Error("The server returned no text response.");
+            throw new Error(
+                "The server returned no text response. Check its API format."
+            );
         }
 
         thinking.textContent = answer;
+
         messages.push({
             role: "assistant",
             content: answer
@@ -395,13 +415,15 @@ async function sendMessage(text) {
 
     } catch (error) {
         thinking.classList.add("error");
+
         thinking.textContent =
-            "Could not contact LiteLLM.\n\n" +
+            "Connection failed.\n\n" +
             error.message +
             "\n\nCheck the server URL, model name, API key, and CORS settings.";
 
-        // Remove the failed request from conversation history.
+        // Remove the unsuccessful user request from the history.
         messages.pop();
+
         statusText.textContent = "Connection error";
 
     } finally {
@@ -409,6 +431,7 @@ async function sendMessage(text) {
         send.disabled = false;
         input.disabled = false;
         input.focus();
+
         chat.scrollTop = chat.scrollHeight;
     }
 }
@@ -416,14 +439,18 @@ async function sendMessage(text) {
 form.addEventListener("submit", function(event) {
     event.preventDefault();
 
+    if (busy || !input.value.trim()) return;
+
     const text = input.value;
-    if (!text.trim() || busy) return;
 
     input.value = "";
     input.style.height = "auto";
 
     const welcome = document.getElementById("welcome");
-    if (welcome) welcome.remove();
+
+    if (welcome) {
+        welcome.remove();
+    }
 
     sendMessage(text);
 });
@@ -437,11 +464,15 @@ input.addEventListener("keydown", function(event) {
 
 input.addEventListener("input", function() {
     input.style.height = "auto";
+
     input.style.height =
         Math.min(input.scrollHeight, 180) + "px";
 });
 
-document.getElementById("newChat").addEventListener("click", resetChat);
+document.getElementById("newChat").addEventListener(
+    "click",
+    resetChat
+);
 </script>
 
 </body>
