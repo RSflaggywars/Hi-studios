@@ -1,3 +1,145 @@
-copyright ©2026 hi-studio. 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Generator</title>
+    <style>
+        /* CSS for professional styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-This is a copyright website. Nothing on here is official!
+        .container {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .key-display {
+            background-color: #f8f9fa;
+            border: 2px dashed #cbd5e0;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #2d3748;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            word-break: break-all;
+            min-height: 1.2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-generate {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background-color: #357abd;
+        }
+
+        .btn-copy {
+            background-color: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn-copy:hover {
+            background-color: #e2e8f0;
+        }
+
+        .toast {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #48bb78;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>API Key Manager</h1>
+        <p>Click the button below to generate a new secure API key for your project.</p>
+
+        <div class="key-display" id="apiKey">Your key will appear here...</div>
+
+        <div class="button-group">
+            <button class="btn-generate" onclick="generateKey()">Generate Key</button>
+            <button class="btn-copy" onclick="copyKey()">Copy Key</button>
+        </div>
+
+        <div class="toast" id="toast">Key copied to clipboard!</div>
+    </div>
+
+    <script>
+        // JavaScript to handle the logic
+        function generateKey() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = 'sk-'; // Common prefix for secret keys
+            const length = 32;
+
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+
+            document.getElementById('apiKey').innerText = result;
+            document.getElementById('toast').style.visibility = 'hidden';
+        }
+
+        function copyKey() {
+            const keyText = document.getElementById('apiKey').innerText;
+
+            if (keyText === "Your key will appear here...") {
+                alert("Please generate a key first!");
+                return;
+            }
+
+            navigator.clipboard.writeText(keyText).then(() => {
+                const toast = document.getElementById('toast');
+                toast.style.visibility = 'visible';
+                setTimeout(() => {
+                    toast.style.visibility = 'hidden';
+                }, 2000);
+            });
+        }
+    </script>
+
+</body>
+</html
